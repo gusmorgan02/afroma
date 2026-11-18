@@ -385,7 +385,11 @@ export default function App() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password: senha,
-        options: { data: { name: nome }, ...(captchaToken ? { captchaToken } : {}) },
+        options: {
+          data: { name: nome },
+          emailRedirectTo: window.location.origin,
+          ...(captchaToken ? { captchaToken } : {}),
+        },
       });
       if (error) {
         authCooldown.recordFailure();

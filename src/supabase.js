@@ -24,7 +24,7 @@ export function getSupabaseError(error) {
     return 'E-mail ou senha incorretos.';
   }
 
-  if (error?.message?.includes('Email not confirmed')) {
+  if (error?.code === 'email_not_confirmed' || error?.message?.includes('Email not confirmed')) {
     return 'Confirme seu e-mail pelo link enviado antes de entrar.';
   }
 
