@@ -28,5 +28,9 @@ export function getSupabaseError(error) {
     return 'Confirme seu e-mail pelo link enviado antes de entrar.';
   }
 
+  if (error?.message?.includes('captcha') || error?.message?.includes('CAPTCHA')) {
+    return 'Não foi possível validar a proteção antirobô. Conclua novamente a verificação e tente entrar.';
+  }
+
   return error?.message || 'Não foi possível concluir a operação. Tente novamente.';
 }

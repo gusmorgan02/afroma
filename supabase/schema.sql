@@ -157,9 +157,13 @@ returns trigger
 language plpgsql
 security definer set search_path = ''
 as $$
+declare
+  v_name text;
 begin
+  v_name := left(coalesce(nullif(btrim(new.raw_user_meta_data ->> 'name'), ''), 'Usuário AFROMA'), 80);
   insert into public.profiles (id, name)
-  values (new.id, coalesce(new.raw_user_meta_data ->> 'name', ''));
+  values (new.id, v_name)
+  on conflict (id) do nothing;
   return new;
 end;
 $$;
@@ -168,6 +172,17 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+insert into public.profiles (id, name)
+select
+  users.id,
+  left(coalesce(nullif(btrim(users.raw_user_meta_data ->> 'name'), ''), 'Usuário AFROMA'), 80)
+from auth.users users
+where not exists (
+  select 1
+  from public.profiles profiles
+  where profiles.id = users.id
+);
 
 alter table public.profiles enable row level security;
 alter table public.cultural_contents enable row level security;
@@ -401,4 +416,3 @@ values
   ('alcione-samba', 'Não Deixe o Samba Morrer', 'Alcione', 'Samba', 'Maranhão', '1975', '4:00', 'https://cdn.awsli.com.br/600x450/769/769081/produto/95894501/2cfa293a9f.jpg', '5Q8VNoMzKkw', 'Um dos maiores clássicos interpretados por Alcione, uma das vozes mais importantes da música brasileira.'),
   ('alcione-ebano', 'Meu Ébano', 'Alcione', 'Samba / MPB', 'Maranhão', '2006', '4:00', 'https://i.scdn.co/image/ab67616d0000b273b7f7aee3a19e093e26dcf6cc', '5JNa47qtJmM', 'Canção interpretada por Alcione e presente no repertório da cantora maranhense.')
 on conflict (id) do nothing;
-

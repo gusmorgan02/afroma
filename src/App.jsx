@@ -253,7 +253,7 @@ export default function App() {
     async function carregarPerfilEFavoritos() {
       try {
         const [profileResult, favoritesResult, musicFavoritesResult] = await Promise.all([
-          supabase.from('profiles').select('name, role').eq('id', authUser.id).single(),
+          supabase.from('profiles').select('name, role').eq('id', authUser.id).maybeSingle(),
           supabase.from('favorites').select('item_id').eq('user_id', authUser.id),
           supabase.from('music_favorites').select('track_id').eq('user_id', authUser.id),
         ]);
@@ -263,9 +263,9 @@ export default function App() {
         if (!active) return;
         setUsuario({
           id: authUser.id,
-          nome: profileResult.data.name || authUser.user_metadata?.name || '',
+          nome: profileResult.data?.name || authUser.user_metadata?.name || 'Usuário AFROMA',
           email: authUser.email,
-          role: profileResult.data.role,
+          role: profileResult.data?.role || 'user',
         });
         setFavoritos(favoritesResult.data.map(item => item.item_id));
         setFavoritosMusica(musicFavoritesResult.data.map(item => item.track_id));
@@ -667,7 +667,7 @@ export default function App() {
       {(!supabaseConfigured || erroBackend || dadosCarregando) && (
         <div className={`backend-status ${erroBackend ? 'error' : ''}`} role="status">
           {!supabaseConfigured
-            ? 'Banco Supabase não configurado. Adicione as variáveis VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.'
+            ? ''
             : erroBackend || (dadosCarregando ? 'Carregando conteúdos e eventos…' : '')}
         </div>
       )}
