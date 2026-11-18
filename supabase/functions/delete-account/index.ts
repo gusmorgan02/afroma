@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 function resolveAllowedOrigin(value: string | undefined) {
   const candidate = value?.trim();
-  if (!candidate) return 'http://localhost:5173';
+  if (!candidate) return '';
   try {
     const url = new URL(candidate);
     const isLocalHttp = url.protocol === 'http:' &&
@@ -11,9 +11,9 @@ function resolveAllowedOrigin(value: string | undefined) {
       return url.origin;
     }
   } catch {
-    return 'http://localhost:5173';
+    return '';
   }
-  return 'http://localhost:5173';
+  return '';
 }
 
 const allowedOrigin = resolveAllowedOrigin(Deno.env.get('ALLOWED_ORIGIN'));

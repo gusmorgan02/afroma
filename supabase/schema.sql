@@ -67,6 +67,15 @@ grant insert, update, delete on public.cultural_music to authenticated;
 grant select, insert, update, delete on public.favorites, public.music_favorites to authenticated;
 grant usage, select on sequence public.cultural_contents_id_seq, public.cultural_events_id_seq to authenticated;
 
+update public.profiles
+set name = left(
+  coalesce(nullif(btrim(name), ''), 'Usuário AFROMA'),
+  80
+)
+where name is null
+   or btrim(name) = ''
+   or char_length(name) > 80;
+
 alter table public.profiles drop constraint if exists profiles_name_length_check;
 alter table public.profiles
   add constraint profiles_name_length_check
