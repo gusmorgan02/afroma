@@ -214,6 +214,7 @@ export default function App() {
           categoria: item.category,
           titulo: item.title,
           resumo: item.summary,
+          conteudo: item.content || '',
           imagem: item.image_url || '',
           video: item.video_url || '',
         })));
@@ -520,6 +521,7 @@ export default function App() {
       category: conteudo.categoria,
       title: conteudo.titulo,
       summary: conteudo.resumo,
+      content: conteudo.conteudo,
       image_url: conteudo.imagem || null,
       video_url: conteudo.video || null,
     };
@@ -533,6 +535,7 @@ export default function App() {
       categoria: data.category,
       titulo: data.title,
       resumo: data.summary,
+      conteudo: data.content || '',
       imagem: data.image_url || '',
       video: data.video_url || '',
     };
@@ -1235,29 +1238,34 @@ function Detalhe({ id, conteudos, favoritos, alternarFavorito, navegar }) {
           </div>
 
           <div className="detail-text">
-            <h2>Sobre este conteúdo</h2>
-
-            <p>
-              A cultura afro-brasileira representa uma parte fundamental da
-              identidade brasileira. Suas manifestações estão presentes na
-              música, na dança, na culinária, na religiosidade, na literatura,
-              nas festas e na memória das comunidades.
-            </p>
-
-            <p>
-              No Maranhão, essas tradições possuem características próprias e se
-              expressam através de manifestações como o Tambor de Crioula, o
-              Tambor de Mina, o reggae maranhense e diversas expressões
-              culinárias.
-            </p>
-
-            <h2>Cultura e memória</h2>
-
-            <p>
-              Preservar essas manifestações significa valorizar os saberes
-              transmitidos entre gerações e reconhecer a contribuição dos povos
-              africanos e de seus descendentes para a formação do Brasil.
-            </p>
+            {conteudo.conteudo ? (
+              <>
+                <h2>Sobre este conteúdo</h2>
+                <p className="detail-article-body">{conteudo.conteudo}</p>
+              </>
+            ) : (
+              <>
+                <h2>Sobre este conteúdo</h2>
+                <p>
+                  A cultura afro-brasileira representa uma parte fundamental da
+                  identidade brasileira. Suas manifestações estão presentes na
+                  música, na dança, na culinária, na religiosidade, na literatura,
+                  nas festas e na memória das comunidades.
+                </p>
+                <p>
+                  No Maranhão, essas tradições possuem características próprias e se
+                  expressam através de manifestações como o Tambor de Crioula, o
+                  Tambor de Mina, o reggae maranhense e diversas expressões
+                  culinárias.
+                </p>
+                <h2>Cultura e memória</h2>
+                <p>
+                  Preservar essas manifestações significa valorizar os saberes
+                  transmitidos entre gerações e reconhecer a contribuição dos povos
+                  africanos e de seus descendentes para a formação do Brasil.
+                </p>
+              </>
+            )}
           </div>
         </div>
       </article>
@@ -1670,6 +1678,7 @@ function Admin({ conteudos, eventos, musicas, usuario, salvarConteudo, removerCo
   const [conteudoEmEdicao, setConteudoEmEdicao] = useState(null);
   const [titulo, setTitulo] = useState('');
   const [resumo, setResumo] = useState('');
+  const [conteudoCompleto, setConteudoCompleto] = useState('');
   const [categoria, setCategoria] = useState('historia');
   const [midia, setMidia] = useState('');
   const [tipoMidia, setTipoMidia] = useState('imagem');
@@ -1731,6 +1740,7 @@ function Admin({ conteudos, eventos, musicas, usuario, salvarConteudo, removerCo
     setConteudoEmEdicao(null);
     setTitulo('');
     setResumo('');
+    setConteudoCompleto('');
     setCategoria('historia');
     setMidia('');
     setTipoMidia('imagem');
@@ -1742,6 +1752,7 @@ function Admin({ conteudos, eventos, musicas, usuario, salvarConteudo, removerCo
     setConteudoEmEdicao(item.id);
     setTitulo(item.titulo);
     setResumo(item.resumo);
+    setConteudoCompleto(item.conteudo || '');
     setCategoria(item.categoria);
     setMidia(item.video || item.imagem || '');
     setTipoMidia(item.video ? 'video' : 'imagem');
@@ -1760,6 +1771,7 @@ function Admin({ conteudos, eventos, musicas, usuario, salvarConteudo, removerCo
         categoria,
         titulo: titulo.trim(),
         resumo: resumo.trim(),
+        conteudo: conteudoCompleto.trim(),
         imagem: tipoMidia === 'imagem' ? urlMidia : '',
         video: tipoMidia === 'video' ? urlMidia : '',
       }, conteudoEmEdicao);
@@ -1920,8 +1932,10 @@ function Admin({ conteudos, eventos, musicas, usuario, salvarConteudo, removerCo
           <select id="content-category" value={categoria} onChange={e => setCategoria(e.target.value)}>
             {categorias.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
           </select>
-          <label htmlFor="content-summary">Descrição</label>
+          <label htmlFor="content-summary">Apresentação (descrição curta)</label>
           <textarea id="content-summary" value={resumo} onChange={e => setResumo(e.target.value)} placeholder="Conte um pouco sobre este conteúdo" maxLength={3000} required />
+          <label htmlFor="content-body">Conteúdo completo</label>
+          <textarea id="content-body" value={conteudoCompleto} onChange={e => setConteudoCompleto(e.target.value)} placeholder="Escreva aqui o conteúdo que será exibido ao clicar em “Ler conteúdo”" maxLength={20000} required />
           <label htmlFor="content-media">Imagem ou vídeo (máximo 20 MB)</label>
           <input ref={arquivoConteudoRef} id="content-media" type="file" accept="image/*,video/*" onChange={selecionarMidia} />
           {midia && <label htmlFor="content-media-type">Tipo da mídia</label>}

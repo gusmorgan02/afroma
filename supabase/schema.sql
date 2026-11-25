@@ -11,10 +11,14 @@ create table if not exists public.cultural_contents (
   category text not null,
   title text not null,
   summary text not null,
+  content text not null default '',
   image_url text,
   video_url text,
   created_at timestamptz not null default now()
 );
+
+alter table public.cultural_contents
+  add column if not exists content text not null default '';
 
 create table if not exists public.cultural_music (
   id text primary key default gen_random_uuid()::text,

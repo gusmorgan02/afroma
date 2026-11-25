@@ -982,6 +982,10 @@ p {
   font-size: 19px;
 }
 
+.detail-article-body {
+  white-space: pre-wrap;
+}
+
 .detail-actions {
   display: flex;
 
